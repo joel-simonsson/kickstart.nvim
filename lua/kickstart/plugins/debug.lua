@@ -23,6 +23,7 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
+    'mxsdev/nvim-dap-vscode-js',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -97,6 +98,62 @@ return {
         'delve',
       },
     }
+
+    dap.adapters['pwa-node'] = {
+      type = 'server',
+      host = 'localhost',
+      port = '${port}',
+      executable = {
+        command = 'js-debug-adapter',
+        args = { '${port}' },
+      },
+    }
+
+    dap.adapters['pwa-chrome'] = {
+      type = 'server',
+      host = 'localhost',
+      port = '${port}',
+      executable = {
+        command = 'js-debug-adapter',
+        args = { '${port}' },
+      },
+    }
+
+    for _, language in ipairs { 'typescript', 'javascript' } do
+      dap.configurations[language] = {
+
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+        },
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file (with terminal)',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+          console = 'integratedTerminal',
+        },
+        {
+          type = 'pwa-chrome',
+          request = 'launch',
+          name = 'Launch Chrome',
+          url = 'http://localhost:3000',
+          webRoot = '${workspaceFolder}',
+          sourceMaps = true,
+        },
+        {
+          type = 'pwa-chrome',
+          request = 'attach',
+          name = 'Attach to Chrome',
+          port = 9222,
+          webRoot = '${workspaceFolder}',
+        },
+      }
+    end
 
     -- Dap UI setup
     -- For more information, see |:help nvim-dap-ui|
